@@ -150,12 +150,8 @@
           # Install package
           environment.systemPackages = [cfg.package];
 
-          # Configure udev rules (NixOS declarative way)
-          services.udev.extraRules = ''
-            # Alienware USB devices for lighting control
-            SUBSYSTEM=="usb", ATTRS{idVendor}=="187c", ATTRS{idProduct}=="0551", MODE="0660", TAG+="uaccess"
-            SUBSYSTEM=="usb", ATTRS{idVendor}=="187c", ATTRS{idProduct}=="0550", MODE="0660", TAG+="uaccess"
-          '';
+          # Install udev rules
+          services.udev.packages = [cfg.package];
 
           # Enable systemd service
           systemd.services.awccd = {
@@ -174,6 +170,12 @@
           # Load acpi_call kernel module
           boot.extraModulePackages = with config.boot.kernelPackages; [acpi_call];
           boot.kernelModules = ["acpi_call"];
+
+          # Ensure udev rules are reloaded
+          system.activationScripts.awcc-udev = ''
+            ${pkgs.systemd}/bin/udevadm control --reload-rules
+            ${pkgs.systemd}/bin/udevadm trigger
+          '';
         };
       };
   };
