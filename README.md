@@ -1,130 +1,146 @@
-# AWCC for Dell G series
+# AWCC for Alienware & Dell G series 🚀
 
-Alienware Command Center for Dell G series with keybords USB 187c:0550 and USB 187c:0551 that auto detects if ur using intel or amd and with this you could set manual fan speeds too
+[![Build and Upload](https://github.com/tr1xem/AWCC/actions/workflows/build.yml/badge.svg)](https://github.com/tr1xem/AWCC/actions/workflows/build.yml)
 
-# Building  And  Installation
+AWCC\* is an unofficial alternative to Alienware Command Centre of Windows for the Dell G series and Alienware Series Laptops on Linux, supporting almost all features that the Windows version supports, including custom fan controls, light effects, g-mode, and autoboost.
 
--  Dependencies : libnotify
+###### \*This project is not affiliated with, endorsed, sponsored, or produced by Dell. It is simply my personal contribution and hobby aimed at improving the Linux experience on Dell laptops.
+
+🎮 **Discord community for support and feedback** :
+
+[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/EMWUTgegDm)](https://discord.gg/EMWUTgegDm)
+
+---
+
+## ✨ Features
+
+- 🖥️ **GUI and CLI support**
+- ⚡ **Lightweight** (uses around ~100mb of RAM with GUI, else 6mb RAM)
+- 🌈 **All Light Effects**
+- 🧑‍💻 **Daemon Support** (no sudo needed if daemon is running)
+- 🎮 **GMode and Light Key autobinding** just like Windows
+- 🔥 **Supports All modes** that your device has
+- 💻 **Supports all of G15 and G16** with some Alienware
+- 🕵️ **No Telemetry and Open Source** :3
+- 📈 **Custom Fan Curve** (Soon)
+
+---
+
+## 📸 Screenshots
+
+![AWCC](assets/preview.png)
+
+---
+
+## 🛠️ Building And Installation
+
+#### 🗿 For Arch-Based Distros
+
+```bash
+paru -S awcc-bin
+```
+
+### 🛠️ Manual Installation
+
+**Dependencies** :
+
+- `acpi_call-dkms`
+- `git`
+- `make`
+- `cmake`
+- `libusb`
+- `glfw`
+- `libx11`
+- `libgl`
+- `ttf-roboto`
+
+**Make Dependencies** :
+
+> [!NOTE]
+> Recommended to install them first if you want a faster compile progress
+
+- `loguru`
+- `nlohmann_json`
+- `stb_image`
+- `libevdev`
+
+OR if you are a debianoid
+
+```
+sudo apt-get install acpi-call-dkms git make cmake  libusb-1.0-0-dev  libglfw3-dev  libx11-dev libgl-dev libevdev-dev pkgconf g++-13
+```
 
 ```bash
 git clone https://github.com/tr1xem/AWCC
-cd  AWCC
-make
-make install
+cd AWCC && mkdir build/
+cd build && cmake ..
+sudo make install
 ```
 
-Make a udev rule for it.(make sure to replace 0551 by 0550 if ur using that)
+Then enable the `awccd.service` using :
 
 ```bash
-# /etc/udev/rules.d/99-awcc.rules
-SUBSYSTEM=="usb", ATTRS{idVendor}=="187c", ATTRS{idProduct}=="0551", MODE="0660",GROUP="plugdev"
-
+sudo systemctl enable --now awccd.service
 ```
 
+Reload udev rules using
 
-Then execute these cmds to add urself in plugdev
-
-
-```bash
- sudo groupadd plugdev
- sudo usermod -aG plugdev $USER
+```
+sudo udevadm control --reload-rules
+sudo udevadm trigger
 ```
 
-# Usage
-```bash
-Alienware Command Center for Dell G Series
-==========================================
+Load ACPI module using
 
-Usage:
-  awcc [command] [arguments]...
-
-Lighting Controls:
-  brightness <value>     Set keyboard brightness (0-100)
-  static <color>         Set static color (hex RGB)
-  breathe <color>        Breathing color effect
-  wave <color>           Wave color effect
-  bkf <color>            Back-and-forth color effect
-  rainbow <duration>     Rainbow spectrum cycle (ms)
-  spectrum <duration>    Full color cycle (ms)
-  defaultblue            Set default static blue color
-
-Fan Controls (Run as root):
-  qm                     Query current fan mode
-  g                      Set G-Mode
-  q                      Set Quiet Mode
-  p                      Set Performance Mode
-  b                      Set Balanced Mode
-  bs                     Set Battery Saver Mode
-  gt                     Toggle G-Mode (useful for keybinds)
-
-Fan Boost Controls (Run as root):
-  cb                      Get CPU fan boost
-  gb                      Get GPU fan boost
-  scb <value>             Set CPU fan boost (1-100)
-  sgb <value>             Set GPU fan boost (1-100)
+```
+sudo modprobe acpi_call
 ```
 
-# Device Tested
+## Support and Feedback
 
-Tested on:
-Dell  G15 5530 with USB 187c:0551
+Need support or want this project to support your device ? Join our [Discord community](https://discord.gg/EMWUTgegDm) or open a [Github Discussion](https://github.com/tr1xem/AWCC/discussions)
 
-Should Work in all Dell G15 models and some G16 too
-Feel Free to test and give suggestions!
+## Device Tested
 
-# FAQ and TIPS
+**Tested on:**
 
-Q: How do a keybind for Light Toggle ?
+- Dell G7 7500
+- Dell G15 5511
+- Dell G15 5515
+- Dell G15 5520
+- Dell G15 Special Edition 5521
+- Dell G15 5525
+- Dell G15 5530
+- Dell G16 7620
+- Dell G16 7630
+- Alienware m16 R2 (execpt keyboard all lights work)
+- Alienware m17 R5 AMD
+- Alienware m18 R1 AMD
+- Alienware 16 Area-51 AA16250(lighting is bugged)
+- Alienware 16 Aurora AC16250
 
-Ans : Install it and make a script under `~/.local/share/bin` as follows
+## 🗺️ Roadmap
 
-```bash
-#!/bin/bash
-STATE_FILE="rotate_state.txt"
-VALUES=(0 50 100)
-CURRENT_INDEX=$(cat "$STATE_FILE" 2>/dev/null || echo -1)
-NEXT_INDEX=$(( (CURRENT_INDEX + 1) % ${#VALUES[@]} ))
-echo $NEXT_INDEX > "$STATE_FILE"
-ARG=${VALUES[$NEXT_INDEX]}
-echo "Executing command with argument: $ARG"
-awcc brightness "$ARG"
-```
-and Bind it to  a key preferrably F5
+- [x] ♨️ Rewrite Thermal Core of AWCC in C++ with minimal API changes
+- [x] 💡 Rewrite LightFX Core of AWCC in C++ with minimal API changes
+- [x] 🖥️ CLI Mode
+- [x] 📦 install script
+- [x] 🖼️ GUI - Using `Dear ImGui` and some visuals from Windows version
+- [ ] 🧩 Auto Zone identify using `libusb` and `Alien FX Sdk`
+- [ ] 📊 Fan Curve for AutoBoost
+- [x] 🖲️ Improved DMI and Normal Device Detection
+- [x] 🧠 Better ACPI Executions with fallback and functions like `executeacip(0x2, 0x0, 0x0, 0x0)`
+- [x] 🕹️ Support for Legacy `USTT` modes
+- [x] 📝 JSON Config file and parsing
+- [x] ⌨️ Grab Unmark keys directly from daemon using `evdev`
+- [ ] 👾 Other Zones like head and support for `Alienware` - Low Priority
+- [x] 🐞 Verbose and Debug Mode
 
-Q. Can I keybind the gmode toggle to a key like windows?
+## 🙏 Credits
 
-Ans: Ofc you can here is how i do it
-```bash
-#!/bin/bash
+- [GasparVardanyan](https://github.com/GasparVardanyan)
+- [humanfx](https://github.com/tiagoporsch/humanfx)
+- [meduk0](https://github.com/meduk0)
+- [WMI Kernel Driver](https://docs.kernel.org/6.16/wmi/devices/alienware-wmi.html)
 
-# Run the command to get the current mode
-current_mode=$(sudo awcc qm | grep -oP 'Current mode: \K.*')
-echo "Current mode: $current_mode"
-# Check if the mode is "Gaming (G-Mode)" or not
-if [[ "$current_mode" != "Gaming (G-Mode)" ]]; then
-    # Mode is not Gaming (G-Mode), toggle to G-Mode
-    sudo /usr/bin/awcc gt
-    # Send notification for switching to Gaming Mode
-    notify-send "Alienware Command Centre" "Turning on G-Mode"
-else
-    # Mode is Gaming (G-Mode), toggle to G-Mode
-    sudo /usr/bin/awcc gt
-    # Send notification for staying in Gaming Mode
-    notify-send "Alienware Command Centre" "Turning off G-Mode"
-fi
-```
-now add the awcc executable with full path a in visudo so it dont ask for passwords and then when ever u run the bash script you swich between modes with a notification.
-# TODO
-- [X] CLI
-- [ ] GUI
-
-
-# Credits
-
-- https://github.com/tiagoporsch/humanfx
-- @meduk0
-- Arch Wiki
-
-“Intelligence is the ability to avoid doing work, yet getting the work done.”
-
-_~Linus Torvalds_
+**“Intelligence is the ability to avoid doing work, yet getting the work done.”** _~Linus Torvalds_

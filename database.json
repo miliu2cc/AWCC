@@ -1,0 +1,72 @@
+{
+    "G7 7500": {
+        "featureSet": "1111111",
+        "thermalModes": "11010111",
+        "lightingModes": "111111"
+    },
+    "Dell G15 5511": {
+        "featureSet": "1111111",
+        "thermalModes": "11010111",
+        "lightingModes": "111111"
+    },
+    "Dell G15 5515": {
+        "featureSet": "1111111",
+        "thermalModes": "11000000",
+        "lightingModes": "111111"
+    },
+    "Dell G15 5520": {
+        "featureSet": "1111111",
+        "thermalModes": "11001111",
+        "lightingModes": "111111"
+    },
+    "Dell G15 Special Edition 5521": {
+        "featureSet": "1111111",
+        "thermalModes": "11001111",
+        "lightingModes": "111111"
+    },
+    "Dell G15 5525": {
+        "featureSet": "1111111",
+        "thermalModes": "11101111",
+        "lightingModes": "111111"
+    },
+    "Dell G15 5530": {
+        "featureSet": "1111111",
+        "thermalModes": "11001111",
+        "lightingModes": "111111"
+    },
+    "Dell G16 7620": {
+        "featureSet": "1111111",
+        "thermalModes": "11001111",
+        "lightingModes": "000111"
+    },
+    "Dell G16 7630": {
+        "featureSet": "1111111",
+        "thermalModes": "11001111",
+        "lightingModes": "000111"
+    },
+    "Alienware m16 R2": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
+    "Alienware m17 R5 AMD": {
+        "featureSet": "1111111",
+        "thermalModes": "11100111",
+        "lightingModes": "111111"
+    },
+    "Alienware m18 R1 AMD": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
+    "Alienware 16 Area-51 AA16250": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
+    "Alienware 16 Aurora AC16250": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    }
+}
