@@ -299,7 +299,7 @@ static int handleCliCommands(std::span<char *> args, EffectController &effects,
     }
 
     if (cmd == "test-modes") {
-        acpiUtils.testThermalModes();
+        thermals.testThermalModes();
         return 0;
     }
 
@@ -384,8 +384,6 @@ int main(int argc, char *argv[]) {
 
         daemon.setOnGmodeKeyCallback(
             [&awccthermals]() { awccthermals.toggleGmode(); });
-        daemon.setDeviceName(
-            [&acpiUtils]() { return AcpiUtils::getDeviceName(); });
         awcc::runDaemonServer(daemon);
 
         if (geteuid() != 0) {

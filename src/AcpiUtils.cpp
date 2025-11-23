@@ -1,4 +1,5 @@
 #include "AcpiUtils.h"
+#include "helper.h"
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -16,7 +17,7 @@ const char *AcpiUtils::getPrefix() {
         std::exit(1);
     }
     std::string line;
-    std::string deviceName = getDeviceName();
+    std::string deviceName = Helper::getDeviceName();
     // NOTE: Dell is just doing some weird things with this device only it made
     // amd's perfix like intel's for no reason apparently
     //
@@ -24,6 +25,10 @@ const char *AcpiUtils::getPrefix() {
     // Find some other device so that i can modularise it
     if (deviceName.contains("Alienware m18 R1 AMD")) {
         return "AMWW";
+    }
+    // NOTE: Aurora are weird??
+    if (deviceName.contains("Alienware Aurora R9")) {
+        return "AMW1";
     }
     while (std::getline(cpuinfo, line)) {
         if (line.find("vendor_id") != std::string::npos) {
@@ -41,27 +46,8 @@ const char *AcpiUtils::getPrefix() {
     return "";
 }
 
-const char *AcpiUtils::getDeviceName() {
-    static std::string deviceName;
-    std::ifstream dmiFile("/sys/class/dmi/id/product_name");
-    if (!dmiFile.is_open()) {
-        LOG_S(ERROR) << "Cannot read /sys/class/dmi/id/product_name";
-        std::exit(1);
-    }
-
-    std::stringstream buffer;
-    buffer << dmiFile.rdbuf();
-    deviceName = buffer.str();
-
-    if (!deviceName.empty() && deviceName.back() == '\n') {
-        deviceName.pop_back();
-    }
-
-    return deviceName.c_str();
-};
-
 int AcpiUtils::m_resolveDevicefromDatabase() {
-    m_deviceName = getDeviceName();
+    m_deviceName = Helper::getDeviceName();
     std::string path = "/etc/awcc/database.json";
     std::ifstream file(path);
     if (m_testMode) {
@@ -364,99 +350,4 @@ bool AcpiUtils::setTurboBoost(bool enable) {
     // Assume m_daemon.executeFromDaemon(cmd) returns true on success
     m_daemon.executeFromDaemon(cmd.c_str());
     return true;
-}
-
-const char *AcpiUtils::getThermalModeString(int mode) {
-    switch (mode) {
-    case 0xa0:
-        return "Balanced";
-    case 0xa1:
-        return "Performance";
-    case 0xa2:
-        return "Cool";
-    case 0xa3:
-        return "Quiet";
-    case 0xa4:
-        return "FullSpeed";
-    case 0xa5:
-        return "BatterySaver";
-    case 0xab:
-        return "Gmode";
-    case 0x0:
-        return "Manual";
-    default:
-        return "Unknown";
-    }
-}
-
-std::string AcpiUtils::generateThermalModesBitmap() {
-    std::bitset<8> bitmap{0};
-    if (executeAcpiCommand(0x15, 0x01, static_cast<int>(ThermalModes::Quiet),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::Quiet);
-    }
-    if (executeAcpiCommand(0x15, 0x01, static_cast<int>(ThermalModes::Balanced),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::Balanced);
-    }
-    if (executeAcpiCommand(0x15, 0x01,
-                           static_cast<int>(ThermalModes::Performance),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::Performance);
-    }
-    if (executeAcpiCommand(0x15, 0x01,
-                           static_cast<int>(ThermalModes::BatterySaver),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::BatterySaver);
-    }
-    if (executeAcpiCommand(0x15, 0x01, static_cast<int>(ThermalModes::Cool),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::Cool);
-    }
-    if (executeAcpiCommand(
-            0x15, 0x01, static_cast<int>(ThermalModes::FullSpeed), 0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::FullSpeed);
-    }
-    if (executeAcpiCommand(0x15, 0x01, static_cast<int>(ThermalModes::Gmode),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::GMode);
-    }
-    if (executeAcpiCommand(0x15, 0x01, static_cast<int>(ThermalModes::Manual),
-                           0x00) == 0) {
-        bitmap |= static_cast<uint8_t>(ThermalModeSet::Manual);
-    }
-    return bitmap.to_string();
-}
-
-void AcpiUtils::testThermalModes() {
-    std::cout << "Device Name: " << m_deviceName << "\n";
-    std::cout << "Testing thermal modes...\n\n";
-
-    std::vector<int> testModes;
-
-    for (int i = 0xa0; i <= 0xa9; ++i) {
-        testModes.push_back(i);
-    }
-
-    for (int i = 0xaa; i <= 0xab; ++i) {
-        testModes.push_back(i);
-    }
-
-    for (int mode : testModes) {
-        // std::cout << std::format("Trying mode {:#x}\n", mode);
-        // std::cout << std::format(
-        //     "\\_SB.{}.WMAX 0 0x15 {{0x01, {:#x}, 0x00, 0x00}}\n",
-        //     m_acpiPrefix, mode);
-
-        int result = executeAcpiCommand(0x15, 0x01, mode, 0x00);
-        std::cout << std::format("{:#x} -> {:#x} ({})\n", mode, result,
-                                 getThermalModeString(mode));
-    }
-
-    std::string bitmap = generateThermalModesBitmap();
-    std::cout << "\nGenerated thermal modes bitmap for database.json:\n";
-    std::cout << std::format("\"thermalModes\": \"{}\"\n", bitmap);
-
-    std::cout << "\nReverting to balanced.\n";
-    executeAcpiCommand(0x15, 0x01, 0xa0, 0x00);
 }

@@ -4,6 +4,11 @@
         "thermalModes": "11010111",
         "lightingModes": "111111"
     },
+    "Dell G15 5510": {
+        "featureSet": "1111111",
+        "thermalModes": "11010111",
+        "lightingModes": "111111"
+    },
     "Dell G15 5511": {
         "featureSet": "1111111",
         "thermalModes": "11010111",
@@ -44,6 +49,11 @@
         "thermalModes": "11001111",
         "lightingModes": "000111"
     },
+    "Alienware m16 R1": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
     "Alienware m16 R2": {
         "featureSet": "1111111",
         "thermalModes": "11110111",
@@ -59,6 +69,16 @@
         "thermalModes": "11110111",
         "lightingModes": "111111"
     },
+    "Alienware m18 R2": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
+    "Alienware x16 R2": {
+        "featureSet": "1111111",
+        "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
     "Alienware 16 Area-51 AA16250": {
         "featureSet": "1111111",
         "thermalModes": "11110111",
@@ -67,6 +87,11 @@
     "Alienware 16 Aurora AC16250": {
         "featureSet": "1111111",
         "thermalModes": "11110111",
+        "lightingModes": "111111"
+    },
+    "Alienware Aurora R9": {
+        "featureSet": "1111111",
+        "thermalModes": "00000110",
         "lightingModes": "111111"
     }
 }
